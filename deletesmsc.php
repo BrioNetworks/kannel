@@ -1,6 +1,41 @@
 <?php 
 	if( !empty($_GET['smsc'])){
-		echo $_GET['smsc'];
+		
+		$smsc =  $_GET['smsc'];
+		$smsc1='./smsc.conf';
+		$smsc2='./smsc2.conf';
+		
+		copy($smsc1,$smsc2);
+		//unlink($smsc1);
+		
+		$smsc2file = fopen($smsc2, "r");
+		
+		$smsc1file = fopen($smsc1, "w+");
+		
+		
+		//Output lines until EOF is reached
+		$found = false;
+		while(! feof($smsc2file)) {
+			
+			$line = fgets($smsc2file);
+			$d = explode('=',$line);
+			//echo $d[0];
+			if($d[0] == 'smsc-id'){
+				if(trim($d[1]) == $smsc ){
+					$found = true;
+				}else{
+					$found = false;
+				}
+			}
+			//echo $found;
+			if($found == false){
+				fwrite($smsc1file,$line);
+			}		  
+		}
+		fclose($smsc2file);
+		fclose($smsc1file);
+		
+		unlink($smsc2);
 	}
 	
 	
